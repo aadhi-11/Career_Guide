@@ -16,7 +16,7 @@ export default function ChatLayout({
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const sessionsPerPage = 7;
+  const sessionsPerPage = 5;
 
   // tRPC queries and mutations
   const { data: sessionsData, isLoading } = trpc.getSessions.useQuery({
