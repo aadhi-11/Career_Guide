@@ -2,8 +2,22 @@ import { z } from 'zod';
 import { router, publicProcedure } from './trpc';
 import { mockSessions } from './dummy-data';
 
+// TypeScript interfaces
+interface Session {
+  id: string;
+  title: string;
+  lastMessage: string;
+  timestamp: Date;
+  messages: Array<{
+    id: string;
+    content: string;
+    role: 'user' | 'assistant';
+    timestamp: Date;
+  }>;
+}
+
 // Temporary in-memory storage for testing without database
-let sessions: any[] = mockSessions.map(session => ({
+let sessions: Session[] = mockSessions.map(session => ({
   id: session.id,
   title: session.title,
   lastMessage: session.lastMessage,

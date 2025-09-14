@@ -54,7 +54,6 @@ Remember: Your goal is to be a helpful career mentor that guides users through t
   async generateResponse(
     userMessage: string, 
     sessionId: string, 
-    conversationHistory: ChatMessage[] = [],
     apiKey?: string
   ): Promise<string> {
     try {

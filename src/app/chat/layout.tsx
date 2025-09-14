@@ -3,9 +3,23 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Plus, ChevronLeft, ChevronRight, Menu, X, Home } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, Menu, X, Home } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { trpc } from "@/lib/trpc-client";
+
+// TypeScript interfaces
+interface ChatSession {
+  id: string;
+  title: string;
+  lastMessage: string;
+  timestamp: string;
+  messages: Array<{
+    id: string;
+    content: string;
+    role: 'user' | 'assistant';
+    timestamp: string;
+  }>;
+}
 
 export default function ChatLayout({
   children,
@@ -125,7 +139,7 @@ export default function ChatLayout({
             </div>
           ) : (
           <div className="space-y-1 lg:space-y-2">
-              {chatSessions.map((session: any) => (
+              {chatSessions.map((session: ChatSession) => (
               <div
                 key={session.id}
                 onClick={() => selectChatSession(session.id)}

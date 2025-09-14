@@ -8,9 +8,14 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; delay: number }>>([]);
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; duration: number; delay: number }>>([]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Generate random stars
+    // Mark as client-side rendered
+    setIsClient(true);
+    
+    // Generate random stars only on client
     const generateStars = () => {
       const newStars = Array.from({ length: 150 }, (_, i) => ({
         id: i,
@@ -22,60 +27,77 @@ export default function Home() {
       setStars(newStars);
     };
 
+    // Generate random particles only on client
+    const generateParticles = () => {
+      const newParticles = Array.from({ length: 15 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        duration: 4 + Math.random() * 4,
+        delay: Math.random() * 4,
+      }));
+      setParticles(newParticles);
+    };
+
     generateStars();
+    generateParticles();
   }, []);
 
   return (
     <div className="h-screen w-full relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950">
-      {/* Animated Stars Background with Blur */}
-      <div className="absolute inset-0 backdrop-blur-sm">
-        {stars.map((star) => (
-          <motion.div
-            key={star.id}
-            className="absolute rounded-full bg-white opacity-80 backdrop-blur-sm"
-            style={{
-              left: `${star.x}%`,
-              top: `${star.y}%`,
-              width: `${star.size}px`,
-              height: `${star.size}px`,
-            }}
-            animate={{
-              opacity: [0.4, 1, 0.4],
-              scale: [0.8, 1.3, 0.8],
-            }}
-            transition={{
-              duration: 2 + Math.random() * 2,
-              repeat: Infinity,
-              delay: star.delay,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
+      {/* Animated Stars Background with Blur - Client-side only */}
+      {isClient && (
+        <div className="absolute inset-0 backdrop-blur-sm">
+          {stars.map((star) => (
+            <motion.div
+              key={star.id}
+              className="absolute rounded-full bg-white opacity-80 backdrop-blur-sm"
+              style={{
+                left: `${star.x}%`,
+                top: `${star.y}%`,
+                width: `${star.size}px`,
+                height: `${star.size}px`,
+              }}
+              animate={{
+                opacity: [0.4, 1, 0.4],
+                scale: [0.8, 1.3, 0.8],
+              }}
+              transition={{
+                duration: 2 + (star.delay % 2),
+                repeat: Infinity,
+                delay: star.delay,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* Floating Particles with Blur */}
-      <div className="absolute inset-0 backdrop-blur-sm">
-        {Array.from({ length: 15 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-blue-300 rounded-full opacity-70 backdrop-blur-sm"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -80, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 4 + Math.random() * 4,
-              repeat: Infinity,
-              delay: Math.random() * 4,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
+      {/* Floating Particles with Blur - Client-side only */}
+      {isClient && (
+        <div className="absolute inset-0 backdrop-blur-sm">
+          {particles.map((particle) => (
+            <motion.div
+              key={particle.id}
+              className="absolute w-1 h-1 bg-blue-300 rounded-full opacity-70 backdrop-blur-sm"
+              style={{
+                left: `${particle.x}%`,
+                top: `${particle.y}%`,
+              }}
+              animate={{
+                y: [0, -80, 0],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: particle.duration,
+                repeat: Infinity,
+                delay: particle.delay,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Main Content - Full Height */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 py-8">

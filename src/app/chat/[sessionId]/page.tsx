@@ -1,11 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, Send, User, Bot, Check, CheckCheck } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
+
+// TypeScript interfaces
+interface Message {
+  id: string;
+  content: string;
+  role: 'user' | 'assistant';
+  timestamp: string;
+}
+
+interface OptimisticMessage {
+  id: string;
+  content: string;
+  role: 'user';
+  timestamp: string;
+}
 
 export default function ChatSessionPage() {
   const params = useParams();
@@ -15,7 +30,7 @@ export default function ChatSessionPage() {
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [pendingMessageId, setPendingMessageId] = useState<string | null>(null);
-  const [optimisticMessages, setOptimisticMessages] = useState<any[]>([]);
+  const [optimisticMessages, setOptimisticMessages] = useState<OptimisticMessage[]>([]);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   
   // tRPC queries and mutations
@@ -63,7 +78,7 @@ export default function ChatSessionPage() {
   const addUserMessageMutation = trpc.addMessage.useMutation({
     onSuccess: (sessionData) => {
       // Set the most recent user message as pending
-      const userMessages = sessionData.messages.filter((msg: any) => msg.role === "user");
+      const userMessages = sessionData.messages.filter((msg: Message) => msg.role === "user");
       if (userMessages.length > 0) {
         const lastUserMessage = userMessages[userMessages.length - 1];
         setPendingMessageId(lastUserMessage.id);
@@ -256,7 +271,7 @@ export default function ChatSessionPage() {
             </div>
           </div>
         ) : (
-          displayMessages.map((message: any) => (
+          displayMessages.map((message: Message | OptimisticMessage) => (
             <div
               key={message.id}
               className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} gap-2`}

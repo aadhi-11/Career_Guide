@@ -3,6 +3,22 @@ import { router, publicProcedure } from './trpc';
 import { prisma } from './prisma';
 import { mockSessions } from './dummy-data';
 
+// TypeScript interfaces
+interface PrismaMessage {
+  id: string;
+  content: string;
+  role: string;
+  createdAt: Date;
+}
+
+interface PrismaSession {
+  id: string;
+  title: string;
+  lastMessage: string | null;
+  updatedAt: Date;
+  messages: PrismaMessage[];
+}
+
 export const appRouter = router({
   // Reset sessions to only the 5 mock sessions (for development)
   resetSessions: publicProcedure.mutation(async () => {
@@ -76,12 +92,12 @@ export const appRouter = router({
       const totalPages = Math.ceil(totalCount / limit);
       
       return {
-        sessions: sessions.map((session: any) => ({
+        sessions: sessions.map((session: PrismaSession) => ({
           id: session.id,
           title: session.title,
           lastMessage: session.lastMessage || '',
           timestamp: session.updatedAt,
-          messages: session.messages.map((msg: any) => ({
+          messages: session.messages.map((msg: PrismaMessage) => ({
             id: msg.id,
             content: msg.content,
             role: msg.role.toLowerCase() as 'user' | 'assistant',
@@ -120,7 +136,7 @@ export const appRouter = router({
         title: session.title,
         lastMessage: session.lastMessage || '',
         timestamp: session.updatedAt,
-        messages: session.messages.map((msg: any) => ({
+        messages: session.messages.map((msg: PrismaMessage) => ({
           id: msg.id,
           content: msg.content,
           role: msg.role.toLowerCase() as 'user' | 'assistant',
@@ -183,7 +199,7 @@ export const appRouter = router({
         title: updatedSession.title,
         lastMessage: updatedSession.lastMessage || '',
         timestamp: updatedSession.updatedAt,
-        messages: updatedSession.messages.map((msg: any) => ({
+        messages: updatedSession.messages.map((msg: PrismaMessage) => ({
           id: msg.id,
           content: msg.content,
           role: msg.role.toLowerCase() as 'user' | 'assistant',
@@ -201,7 +217,7 @@ export const appRouter = router({
     }))
     .mutation(async ({ input }) => {
       // Create the message
-      const newMessage = await prisma.message.create({
+      await prisma.message.create({
         data: {
           content: input.content,
           role: input.role.toUpperCase() as 'USER' | 'ASSISTANT',
@@ -228,7 +244,7 @@ export const appRouter = router({
         title: updatedSession.title,
         lastMessage: updatedSession.lastMessage || '',
         timestamp: updatedSession.updatedAt,
-        messages: updatedSession.messages.map((msg: any) => ({
+        messages: updatedSession.messages.map((msg: PrismaMessage) => ({
           id: msg.id,
           content: msg.content,
           role: msg.role.toLowerCase() as 'user' | 'assistant',

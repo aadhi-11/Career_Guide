@@ -86,9 +86,9 @@ Remember: Professional, concise, direct, always end with a question after a blan
       const response = await cohere.generate({
         model: 'command',
         prompt: prompt,
-        max_tokens: 150, // Further reduced for very concise responses
+        maxTokens: 150, // Further reduced for very concise responses
         temperature: 0.7, // Lower for more focused, professional responses
-        stop_sequences: ['User:', 'Assistant:', '\n\nUser:', '\n\nAssistant:'],
+        stopSequences: ['User:', 'Assistant:', '\n\nUser:', '\n\nAssistant:'],
         k: 0, // Disable top-k sampling for more focused responses
         p: 0.85, // Slightly lower for more focused responses
       });
